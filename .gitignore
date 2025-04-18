@@ -1,0 +1,86 @@
+# Compiled Go binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Compiled binary files
+*.o
+*.a
+*.out
+
+# bin and pkg folders
+bin/
+pkg/
+
+# Output directory from go build
+/dist/
+
+# Log files
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# SQLite database files
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.sqlite-journal
+*.db-shm
+*.sqlite-shm
+*.db-wal
+*.sqlite-wal
+
+# Dependency files
+vendor/
+Godeps/
+
+# Local configuration files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Go cache files
+.cache/
+
+# Test coverage files
+*.out
+coverage.txt
+coverage.html
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Air (hot reload)
+.air.toml
+tmp/
+
+# Go specific files
+go.work
+
+# Local configuration files
+config.local.yaml
+config.dev.yaml
+
+# Debug files
+__debug_bin
+debug
+
+# Certificate files
+*.pem
+*.crt
+*.key
