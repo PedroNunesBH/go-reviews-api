@@ -61,3 +61,19 @@ func (h *RestaurantHandler) GetRestaurant(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusOK)
 	w.Write(restaurantJson)
 }
+
+func (h *RestaurantHandler) DeleteRestaurant(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	parsedID, err := pkgEntity.ParseID(id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	err = h.RestaurantRepo.DeleteRestaurant(parsedID)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusNoContent)
+}

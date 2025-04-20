@@ -24,6 +24,7 @@ func main() {
 	r.Route("/restaurants", func (r chi.Router) {
 		r.Post("/", restaurantHandler.CreateRestaurant)
 		r.Get("/{id}", restaurantHandler.GetRestaurant)
+		r.Delete("/{id}", restaurantHandler.DeleteRestaurant)
 	})
 	http.ListenAndServe(":8000", r)
 
