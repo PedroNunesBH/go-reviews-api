@@ -25,6 +25,7 @@ func (h *RestaurantHandler) CreateRestaurant(w http.ResponseWriter, r *http.Requ
 	err := json.NewDecoder(r.Body).Decode(restaurantDTO)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 	restaurant, err := entity.NewRestaurant(restaurantDTO.Name, restaurantDTO.Cnpj, restaurantDTO.Address)
 	if err != nil {
@@ -76,4 +77,20 @@ func (h *RestaurantHandler) DeleteRestaurant(w http.ResponseWriter, r *http.Requ
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *RestaurantHandler) GetAllRestaurants(w http.ResponseWriter, r *http.Request) {
+	restaurants, err := h.RestaurantRepo.FindAllRestaurants()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	restaurantsJson, err := json.Marshal(&restaurants)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(restaurantsJson)
 }
