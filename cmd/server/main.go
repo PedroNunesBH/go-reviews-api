@@ -26,6 +26,7 @@ func main() {
 		r.Get("/{id}", restaurantHandler.GetRestaurant)
 		r.Delete("/{id}", restaurantHandler.DeleteRestaurant)
 		r.Get("/", restaurantHandler.GetAllRestaurants)
+		r.Put("/{id}", restaurantHandler.UpdateRestaurant)
 	})
 	http.ListenAndServe(":8000", r)
 

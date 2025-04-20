@@ -94,3 +94,38 @@ func (h *RestaurantHandler) GetAllRestaurants(w http.ResponseWriter, r *http.Req
 	w.WriteHeader(http.StatusOK)
 	w.Write(restaurantsJson)
 }
+
+func (h *RestaurantHandler) UpdateRestaurant(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	parsedID, err := pkgEntity.ParseID(id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	restaurant, err := h.RestaurantRepo.FindRestaurantByID(parsedID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	restaurantDTO := &dto.RestaurantDTO{}
+	err = json.NewDecoder(r.Body).Decode(&restaurantDTO)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	restaurant.Name = restaurantDTO.Name
+	restaurant.Cnpj = restaurantDTO.Cnpj
+	restaurant.Address = restaurantDTO.Address
+	err = h.RestaurantRepo.UpdateRestaurant(restaurant)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	restaurantJson, err := json.Marshal(&restaurant)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(restaurantJson)
+}
