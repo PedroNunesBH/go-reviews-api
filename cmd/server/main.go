@@ -38,6 +38,7 @@ func main() {
 		r.Get("/{id}", reviewHandler.GetReviewByID)
 		r.Delete("/{id}", reviewHandler.DeleteReview)
 		r.Get("/", reviewHandler.GetAllReviews)
+		r.Put("/{id}", reviewHandler.UpdateReview)
 	})
 
 	http.ListenAndServe(":8000", r)

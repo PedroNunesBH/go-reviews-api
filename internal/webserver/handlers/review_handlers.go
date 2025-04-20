@@ -93,3 +93,44 @@ func (h *ReviewHandler) GetAllReviews(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(reviewsJson)
 }
+
+func (h *ReviewHandler) UpdateReview(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	parsedID, err := pkgEntity.ParseID(id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	review, err := h.ReviewRepo.FindReviewByID(parsedID)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	reviewDTO := &dto.ReviewDTO{}
+	err = json.NewDecoder(r.Body).Decode(reviewDTO)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	review.Description = reviewDTO.Description
+	review.Rating = reviewDTO.Rating
+	review.RestaurantID = reviewDTO.RestaurantID
+
+	err = h.ReviewRepo.UpdateReview(review)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	reviewJson, err := json.Marshal(&review)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(reviewJson)
+}
