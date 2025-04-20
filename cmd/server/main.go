@@ -20,7 +20,11 @@ func main() {
 	restaurantRepo := database.NewRestaurantDB(db)
 	restaurantHandler := handlers.NewRestaurantHandler(restaurantRepo)
 
+	reviewRepo := database.NewReviewDB(db)
+	reviewHandler := handlers.NewReviewHandler(reviewRepo)
+
 	r := chi.NewRouter()
+
 	r.Route("/restaurants", func (r chi.Router) {
 		r.Post("/", restaurantHandler.CreateRestaurant)
 		r.Get("/{id}", restaurantHandler.GetRestaurant)
@@ -28,6 +32,11 @@ func main() {
 		r.Get("/", restaurantHandler.GetAllRestaurants)
 		r.Put("/{id}", restaurantHandler.UpdateRestaurant)
 	})
+	
+	r.Route("/reviews", func (r chi.Router) {
+		r.Post("/", reviewHandler.CreateReview)
+	})
+	
 	http.ListenAndServe(":8000", r)
 
 }
