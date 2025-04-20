@@ -35,8 +35,9 @@ func main() {
 	
 	r.Route("/reviews", func (r chi.Router) {
 		r.Post("/", reviewHandler.CreateReview)
+		r.Get("/{id}", reviewHandler.GetReviewByID)
 	})
-	
+
 	http.ListenAndServe(":8000", r)
 
 }

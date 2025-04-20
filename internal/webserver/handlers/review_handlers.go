@@ -3,10 +3,11 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-
 	"github.com/PedroNunesBH/go-reviews-api/internal/dto"
 	"github.com/PedroNunesBH/go-reviews-api/internal/entity"
 	"github.com/PedroNunesBH/go-reviews-api/internal/infra/database"
+	"github.com/go-chi/chi"
+	pkgEntity "github.com/PedroNunesBH/go-reviews-api/pkg/entity"
 )
 
 type ReviewHandler struct {
@@ -38,4 +39,26 @@ func (h *ReviewHandler) CreateReview(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
+}
+
+func (h *ReviewHandler) GetReviewByID(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	parsedID, err := pkgEntity.ParseID(id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	review, err := h.ReviewRepo.FindReviewByID(parsedID)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	reviewJson, err := json.Marshal(&review)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(reviewJson)
 }
