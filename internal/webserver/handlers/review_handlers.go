@@ -78,3 +78,18 @@ func (h *ReviewHandler) DeleteReview(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusNoContent)
 }
+
+func (h *ReviewHandler) GetAllReviews(w http.ResponseWriter, r *http.Request) {
+	reviews, err := h.ReviewRepo.FindAll()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	reviewsJson, err := json.Marshal(&reviews)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(reviewsJson)
+}

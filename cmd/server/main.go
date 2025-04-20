@@ -37,6 +37,7 @@ func main() {
 		r.Post("/", reviewHandler.CreateReview)
 		r.Get("/{id}", reviewHandler.GetReviewByID)
 		r.Delete("/{id}", reviewHandler.DeleteReview)
+		r.Get("/", reviewHandler.GetAllReviews)
 	})
 
 	http.ListenAndServe(":8000", r)
