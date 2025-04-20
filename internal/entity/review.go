@@ -14,10 +14,10 @@ type Review struct {
 	Description  string		`json:"description"`
 	Rating       float64	`json:"rating"`
 	CreatedAt 	 time.Time	`json:"created_at"`	
-	RestaurantID string		`json:"restaurant_id"`
+	RestaurantID entity.ID		`json:"restaurant_id"`
 }
 
-func NewReview(description string, rating float64, restaurantID string) (*Review, error) {
+func NewReview(description string, rating float64, restaurantID entity.ID) (*Review, error) {
 	review := &Review {
 		ID: entity.NewID(),
 		Description: description,

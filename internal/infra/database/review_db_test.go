@@ -11,13 +11,19 @@ import (
 
 func TestCreateReview(t *testing.T) {
 	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
-	db.AutoMigrate(&entity.Review{})
+	db.AutoMigrate(&entity.Review{}, &entity.Restaurant{})
 	if err != nil {
 		t.Error()
 	}
-	review, err := entity.NewReview("Restaraunte excelente", 4.32, "jeoqu0p-19a-189361n")
+	restaurant, err := entity.NewRestaurant("Bar da Maria", "19020154829102", "Rua das Orquideas 1809")
+	assert.Nil(t, err)
+	restaurantDB := NewRestaurantDB(db)
+	err = restaurantDB.CreateRestaurant(restaurant)
+	assert.Nil(t, err)
+	review, err := entity.NewReview("Restaraunte excelente", 4.32, restaurant.ID)
 	assert.Nil(t, err)
 	reviewDB := NewReviewDB(db)
+	assert.Nil(t, err)
 	err = reviewDB.CreateReview(review)
 	assert.Nil(t, err)
 
@@ -35,9 +41,14 @@ func TestFindAllReviews(t *testing.T) {
 	if err != nil {
 		t.Error()
 	}
-	db.AutoMigrate(&entity.Review{})
+	db.AutoMigrate(&entity.Review{}, &entity.Restaurant{})
 	reviewDB := NewReviewDB(db)
-	review, err := entity.NewReview("Restaraunte excelente", 4.32, "jeoqu0p-19a-189361n")
+	restaurant, err := entity.NewRestaurant("Bar da Maria", "19020154829102", "Rua das Orquideas 1809")
+	assert.Nil(t, err)
+	restaurantDB := NewRestaurantDB(db)
+	err = restaurantDB.CreateRestaurant(restaurant)
+	assert.Nil(t, err)
+	review, err := entity.NewReview("Restaraunte excelente", 4.32, restaurant.ID)
 	assert.Nil(t, err)
 	err = reviewDB.CreateReview(review)
 	assert.Nil(t, err)
@@ -52,9 +63,14 @@ func TestFindReviewByID(t *testing.T) {
 	if err != nil {
 		t.Error()
 	}
-	db.AutoMigrate(&entity.Review{})
+	db.AutoMigrate(&entity.Review{}, &entity.Restaurant{})
 	reviewDB := NewReviewDB(db)
-	review, err := entity.NewReview("Restaraunte excelente", 4.32, "jeoqu0p-19a-189361n")
+	restaurant, err := entity.NewRestaurant("Bar da Maria", "19020154829102", "Rua das Orquideas 1809")
+	assert.Nil(t, err)
+	restaurantDB := NewRestaurantDB(db)
+	err = restaurantDB.CreateRestaurant(restaurant)
+	assert.Nil(t, err)
+	review, err := entity.NewReview("Restaraunte excelente", 4.32, restaurant.ID)
 	assert.Nil(t, err)
 	err = reviewDB.CreateReview(review)
 	assert.Nil(t, err)
@@ -71,8 +87,13 @@ func TestDeleteReview(t *testing.T) {
 	if err != nil {
 		t.Error()
 	}
-	db.AutoMigrate(&entity.Review{})
-	review, err := entity.NewReview("Restaraunte excelente", 4.32, "jeoqu0p-19a-189361n")
+	db.AutoMigrate(&entity.Review{}, &entity.Restaurant{}) 
+	restaurant, err := entity.NewRestaurant("Bar da Maria", "19020154829102", "Rua das Orquideas 1809")
+	assert.Nil(t, err)
+	restaurantDB := NewRestaurantDB(db)
+	err = restaurantDB.CreateRestaurant(restaurant)
+	assert.Nil(t, err)
+	review, err := entity.NewReview("Restaraunte excelente", 4.32, restaurant.ID)
 	assert.Nil(t, err)
 	reviewDB := NewReviewDB(db)
 	err = reviewDB.CreateReview(review)
@@ -91,8 +112,13 @@ func TestUpdateReview(t *testing.T) {
 	if err != nil {
 		t.Error()
 	}
-	db.AutoMigrate(&entity.Review{})
-	review, err := entity.NewReview("Restaraunte excelente", 4.32, "jeoqu0p-19a-189361n")
+	db.AutoMigrate(&entity.Review{}, &entity.Restaurant{})
+	restaurant, err := entity.NewRestaurant("Bar da Maria", "19020154829102", "Rua das Orquideas 1809")
+	assert.Nil(t, err)
+	restaurantDB := NewRestaurantDB(db)
+	err = restaurantDB.CreateRestaurant(restaurant)
+	assert.Nil(t, err)
+	review, err := entity.NewReview("Restaraunte excelente", 4.32, restaurant.ID)
 	assert.Nil(t, err)
 	reviewDB := NewReviewDB(db)
 	err = reviewDB.CreateReview(review)

@@ -25,6 +25,11 @@ func (r *ReviewDB) FindAll() ([]*entity.Review, error) {
 }
 
 func (r *ReviewDB) CreateReview(review *entity.Review) error {
+	restaurantFound := &entity.Restaurant{}
+	result := r.DB.Where("ID = ?", review.RestaurantID).First(restaurantFound)
+	if result.Error != nil {
+		return result.Error
+	}
 	return r.DB.Create(&review).Error
 }
 
