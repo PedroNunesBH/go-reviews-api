@@ -50,7 +50,12 @@ func (r *ReviewDB) DeleteReview(id pkgEntity.ID) error {
 }
 
 func (r *ReviewDB) UpdateReview(review *entity.Review) error {
-	result := r.DB.Model(&entity.Review{}).
+	restaurantFound := &entity.Restaurant{}
+	result := r.DB.Where("id = ?", review.RestaurantID).First(restaurantFound)
+	if result.Error != nil {
+		return result.Error
+	}
+	result = r.DB.Model(&entity.Review{}).
         Where("id = ?", review.ID).
         Updates(map[string]interface{}{
             "description":     review.Description,

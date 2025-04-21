@@ -112,6 +112,7 @@ func (h *ReviewHandler) UpdateReview(w http.ResponseWriter, r *http.Request) {
 	err = json.NewDecoder(r.Body).Decode(reviewDTO)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	review.Description = reviewDTO.Description
