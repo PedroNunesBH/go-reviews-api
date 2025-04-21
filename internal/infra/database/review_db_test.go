@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 	"github.com/glebarez/sqlite"
 	"errors"
+	pkgEntity "github.com/PedroNunesBH/go-reviews-api/pkg/entity"
 )
 
 func TestCreateReview(t *testing.T) {
@@ -34,6 +35,24 @@ func TestCreateReview(t *testing.T) {
 	assert.Equal(t, review.Description, reviewFound.Description)
 	assert.Equal(t, review.Rating, reviewFound.Rating)
 	assert.Equal(t, review.RestaurantID, reviewFound.RestaurantID)
+}
+
+func TestCreateReviewWithAnInexistentRestaurantID(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
+	if err != nil {
+		t.Error(err)
+	}
+	db.AutoMigrate(&entity.Restaurant{}, &entity.Review{})
+
+	reviewDB := NewReviewDB(db)
+	restaurantID, err := pkgEntity.ParseID("0b6bd722-7ee9-415c-826c-5e165b6781fe")
+	assert.Nil(t, err)
+	review, err := entity.NewReview("Restaraunte excelente", 4.32, restaurantID)
+	assert.Nil(t, err)
+	err = reviewDB.CreateReview(review)
+
+	assert.Error(t, err)
+	assert.True(t, errors.Is(err, gorm.ErrRecordNotFound))
 }
 
 func TestFindAllReviews(t *testing.T) {
