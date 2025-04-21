@@ -154,3 +154,46 @@ func TestUpdateReview(t *testing.T) {
 	assert.Equal(t, "Restaurante agradável", reviewFound.Description)
 	assert.Equal(t, 3.6, reviewFound.Rating)
 }
+
+func TestUpdateReviewWithAnInexistentRestaurantID(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
+	if err != nil {
+		t.Error(err)
+	}
+	db.AutoMigrate(&entity.Review{}, &entity.Restaurant{})
+	restaurantDB := NewRestaurantDB(db)
+	reviewDB := NewReviewDB(db)
+
+	restaurant, err := entity.NewRestaurant("Bar da Maria", "19020154829102", "Rua das Orquideas 1809")
+	assert.Nil(t, err)
+	err = restaurantDB.CreateRestaurant(restaurant)
+	assert.Nil(t, err)
+
+	originalDescription := "Restaraunte excelente"
+	originalRating := 4.32
+	review, err := entity.NewReview(originalDescription, originalRating, restaurant.ID)
+	assert.Nil(t, err)
+	err = reviewDB.CreateReview(review)
+	assert.Nil(t, err)
+	
+	originalRestaurantID := review.RestaurantID
+	
+	restaurantInexistentID, err := pkgEntity.ParseID("0b6bd722-7ee9-415c-826c-5e165b6781fe")
+	assert.Nil(t, err)
+
+	review.Rating = 4.72
+	review.Description = "Restaurante muito bom"
+	review.RestaurantID = restaurantInexistentID
+	
+	err = reviewDB.UpdateReview(review)
+
+	assert.Error(t, err)
+	assert.True(t, errors.Is(err, gorm.ErrRecordNotFound))
+	
+	reviewFound, err := reviewDB.FindReviewByID(review.ID)
+	assert.Nil(t, err)
+	
+	assert.Equal(t, originalRating, reviewFound.Rating)
+	assert.Equal(t, originalDescription, reviewFound.Description)
+	assert.Equal(t, originalRestaurantID, reviewFound.RestaurantID)
+}
