@@ -8,7 +8,21 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/PedroNunesBH/go-reviews-api/internal/webserver/handlers"
 	"github.com/PedroNunesBH/go-reviews-api/internal/infra/database"
+	httpSwagger "github.com/swaggo/http-swagger"
+	_ "github.com/PedroNunesBH/go-reviews-api/docs"
 )
+
+// @title           Reviews API
+// @version         1.0
+// @description     This is an API for restaurant review management
+// @termsOfService  http://swagger.io/terms/
+
+// @host      localhost:8000
+// @BasePath  /
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 
 func main() {
 	db, err := gorm.Open(sqlite.Open("reviews.db"), &gorm.Config{})
@@ -41,6 +55,7 @@ func main() {
 		r.Put("/{id}", reviewHandler.UpdateReview)
 	})
 
+	r.Get("/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/docs/doc.json")))
 	http.ListenAndServe(":8000", r)
 
 }
