@@ -20,10 +20,6 @@ import (
 // @host      localhost:8000
 // @BasePath  /
 
-// @securityDefinitions.apikey ApiKeyAuth
-// @in header
-// @name Authorization
-
 func main() {
 	db, err := gorm.Open(sqlite.Open("reviews.db"), &gorm.Config{})
 	if err != nil {

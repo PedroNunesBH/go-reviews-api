@@ -20,6 +20,17 @@ func NewRestaurantHandler(repo *database.RestaurantDB) *RestaurantHandler {
 	}
 }
 
+// Create Restaurant
+// @Summary      Creat a restaurant
+// @Description  Creat a restaurant
+// @Tags         restaurants
+// @Accept       json
+// @Produce      json
+// @Param        request   body     dto.RestaurantDTO  true "Restaurant data"
+// @Success      201 
+// @Failure      400 
+// @Failure      500 
+// @Router       /restaurants/ [post]
 func (h *RestaurantHandler) CreateRestaurant(w http.ResponseWriter, r *http.Request) {
 	restaurantDTO := &dto.RestaurantDTO{}
 	err := json.NewDecoder(r.Body).Decode(restaurantDTO)
@@ -41,6 +52,17 @@ func (h *RestaurantHandler) CreateRestaurant(w http.ResponseWriter, r *http.Requ
 	w.WriteHeader(http.StatusCreated)
 }
 
+// Get Restaurant
+// @Summary      List restaurants
+// @Description  Get a restaurant
+// @Tags         restaurants
+// @Accept       json
+// @Produce      json
+// @Param        id   path    string  true  "restaurant ID" Format(uuid)
+// @Success      200 {array} entity.Restaurant
+// @Failure      400 
+// @Failure      404
+// @Router       /restaurants/{id} [get]
 func (h *RestaurantHandler) GetRestaurant(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	parsedID, err := pkgEntity.ParseID(id)
@@ -63,6 +85,17 @@ func (h *RestaurantHandler) GetRestaurant(w http.ResponseWriter, r *http.Request
 	w.Write(restaurantJson)
 }
 
+// Delete Restaurant
+// @Summary      Delete a restaurant
+// @Description  Delete a restaurant
+// @Tags         restaurants
+// @Accept       json
+// @Produce      json
+// @Param        id   path    string  true  "restaurant ID" Format(uuid)
+// @Success      204
+// @Failure      400 
+// @Failure      404
+// @Router       /restaurants/{id} [delete]
 func (h *RestaurantHandler) DeleteRestaurant(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	parsedID, err := pkgEntity.ParseID(id)
@@ -79,6 +112,15 @@ func (h *RestaurantHandler) DeleteRestaurant(w http.ResponseWriter, r *http.Requ
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// Get all restaurants
+// @Summary      Get all restaurants
+// @Description  Get all restaurants
+// @Tags         restaurants
+// @Accept       json
+// @Produce      json
+// @Success      200
+// @Failure      500
+// @Router       /restaurants [get]
 func (h *RestaurantHandler) GetAllRestaurants(w http.ResponseWriter, r *http.Request) {
 	restaurants, err := h.RestaurantRepo.FindAllRestaurants()
 	if err != nil {
@@ -95,6 +137,18 @@ func (h *RestaurantHandler) GetAllRestaurants(w http.ResponseWriter, r *http.Req
 	w.Write(restaurantsJson)
 }
 
+// Update a Restaurant
+// @Summary      Update a restaurant
+// @Description  Update a restaurant
+// @Tags         restaurants
+// @Accept       json
+// @Produce      json
+// @Param        id  path  string  true "restaurant ID" Format(uuid)
+// @Param        request body dto.RestaurantDTO true "Restaurant data"
+// @Success      204
+// @Failure      400 
+// @Failure      404
+// @Router       /restaurants/{id} [put]
 func (h *RestaurantHandler) UpdateRestaurant(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	parsedID, err := pkgEntity.ParseID(id)
