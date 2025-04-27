@@ -20,6 +20,17 @@ func NewReviewHandler(repo *database.ReviewDB) *ReviewHandler {
 	}
 }
 
+// Create Review
+// @Summary      Create a review
+// @Description  Create a review
+// @Tags         reviews
+// @Accept       json
+// @Produce      json
+// @Param        request   body     dto.ReviewDTO  true "Review data"
+// @Success      201 
+// @Failure      400 
+// @Failure      500 
+// @Router       /reviews/ [post]
 func (h *ReviewHandler) CreateReview(w http.ResponseWriter, r *http.Request) {
 	reviewDTO := &dto.ReviewDTO{}
 	err := json.NewDecoder(r.Body).Decode(reviewDTO)
@@ -41,6 +52,18 @@ func (h *ReviewHandler) CreateReview(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
+// Get Review By ID
+// @Summary      Get a review by ID
+// @Description  Get a review by ID
+// @Tags         reviews
+// @Accept       json
+// @Produce      json
+// @Param        id  path  string  true  "Review ID"  Format(uuid)
+// @Success      200 
+// @Failure      400
+// @Failure      404
+// @Failure      500 
+// @Router       /reviews/{id} [get]
 func (h *ReviewHandler) GetReviewByID(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	parsedID, err := pkgEntity.ParseID(id)
@@ -63,6 +86,17 @@ func (h *ReviewHandler) GetReviewByID(w http.ResponseWriter, r *http.Request) {
 	w.Write(reviewJson)
 }
 
+// Delete Review
+// @Summary      Delete a review 
+// @Description  Delete a review
+// @Tags         reviews
+// @Accept       json
+// @Produce      json
+// @Param        id  path  string  true  "Review ID"  Format(uuid)
+// @Success      204
+// @Failure      400
+// @Failure      404
+// @Router       /reviews/{id} [delete]
 func (h *ReviewHandler) DeleteReview(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	parsedID, err := pkgEntity.ParseID(id)
@@ -79,6 +113,15 @@ func (h *ReviewHandler) DeleteReview(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// Get All Reviews
+// @Summary      Get all reviews
+// @Description  Get all reviews
+// @Tags         reviews
+// @Accept       json
+// @Produce      json
+// @Success      200
+// @Failure      500
+// @Router       /reviews [get]
 func (h *ReviewHandler) GetAllReviews(w http.ResponseWriter, r *http.Request) {
 	reviews, err := h.ReviewRepo.FindAll()
 	if err != nil {
@@ -94,6 +137,19 @@ func (h *ReviewHandler) GetAllReviews(w http.ResponseWriter, r *http.Request) {
 	w.Write(reviewsJson)
 }
 
+// Update Review
+// @Summary      Update a review
+// @Description  Update a review
+// @Tags         reviews
+// @Accept       json
+// @Produce      json
+// @Param        id  path  string  true  "Review ID"  Format(uuid)
+// @Param        request  body  dto.ReviewDTO  true  "Review Data"
+// @Success      200
+// @Failure      400
+// @Failure      404
+// @Failure      500
+// @Router       /reviews/{id} [put]
 func (h *ReviewHandler) UpdateReview(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	parsedID, err := pkgEntity.ParseID(id)

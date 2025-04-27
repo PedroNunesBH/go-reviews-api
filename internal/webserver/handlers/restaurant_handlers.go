@@ -137,7 +137,7 @@ func (h *RestaurantHandler) GetAllRestaurants(w http.ResponseWriter, r *http.Req
 	w.Write(restaurantsJson)
 }
 
-// Update a Restaurant
+// Update Restaurant
 // @Summary      Update a restaurant
 // @Description  Update a restaurant
 // @Tags         restaurants
