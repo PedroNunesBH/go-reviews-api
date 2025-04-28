@@ -48,3 +48,24 @@ func TestGetUserByID(t *testing.T) {
 	assert.Equal(t, userFound.Email, user.Email)
 	assert.Equal(t, userFound.Password, user.Password)
 }
+
+func TestGetAllUsers(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
+	assert.Nil(t, err)
+	db.AutoMigrate(&entity.User{})
+	userDB := NewUserDB(db)
+
+	user, err := entity.NewUser("Userteste", "teste@gmail.com", "teste234")
+	assert.Nil(t, err)
+	err = userDB.CreateUser(user)
+	assert.Nil(t, err)
+	secondUser, err := entity.NewUser("Userteste2", "teste2@gmail.com", "teste23456")
+	assert.Nil(t, err)
+	err = userDB.CreateUser(secondUser)
+	assert.Nil(t, err)
+	totalUsers := 2
+
+	users, err := userDB.GetAllUsers()
+	assert.Nil(t, err)
+	assert.Equal(t, len(users), totalUsers)
+}

@@ -28,3 +28,12 @@ func (u *UserDB) GetUserByID(id pkgEntity.ID) (*entity.User, error) {
 	}
 	return user, nil
 }
+
+func (u *UserDB) GetAllUsers() ([]*entity.User, error) {
+	var users []*entity.User
+	result := u.DB.Find(&users)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return users, nil
+}
