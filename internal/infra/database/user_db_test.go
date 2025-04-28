@@ -6,6 +6,7 @@ import (
 	"github.com/PedroNunesBH/go-reviews-api/internal/entity"
 	"gorm.io/gorm"
 	"github.com/glebarez/sqlite"
+	"errors"
 )
 
 func TestCreateUser(t *testing.T) {
@@ -68,4 +69,22 @@ func TestGetAllUsers(t *testing.T) {
 	users, err := userDB.GetAllUsers()
 	assert.Nil(t, err)
 	assert.Equal(t, len(users), totalUsers)
+}
+
+func TestDeleteUser(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
+	assert.Nil(t, err)
+	db.AutoMigrate(&entity.User{})
+	userDB := NewUserDB(db)
+
+	user, err := entity.NewUser("Userteste", "teste@gmail.com", "teste234")
+	assert.Nil(t, err)
+	err = userDB.CreateUser(user)
+	assert.Nil(t, err)
+
+	err = userDB.DeleteUser(user.ID)
+	assert.Nil(t, err)
+	_, err = userDB.GetUserByID(user.ID)
+	assert.NotNil(t, err)
+	assert.True(t, errors.Is(err, gorm.ErrRecordNotFound))
 }

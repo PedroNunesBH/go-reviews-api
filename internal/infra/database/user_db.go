@@ -37,3 +37,11 @@ func (u *UserDB) GetAllUsers() ([]*entity.User, error) {
 	}
 	return users, nil
 }
+
+func (u *UserDB) DeleteUser(id pkgEntity.ID) error {
+	result := u.DB.Where("id = ?", id).Delete(&entity.User{})
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
