@@ -88,3 +88,29 @@ func TestDeleteUser(t *testing.T) {
 	assert.NotNil(t, err)
 	assert.True(t, errors.Is(err, gorm.ErrRecordNotFound))
 }
+
+func TestUpdateUser(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
+	assert.Nil(t, err)
+	db.AutoMigrate(&entity.User{})
+	userDB := NewUserDB(db)
+
+	user, err := entity.NewUser("Userteste", "teste@gmail.com", "teste234")
+	assert.Nil(t, err)
+	err = userDB.CreateUser(user)
+	assert.Nil(t, err)
+
+	user.Username = "UsertesteUpdate"
+	user.Email = "testeupdate@gmail.com"
+	err = userDB.UpdateUser(user.ID, user)
+	assert.Nil(t, err)
+
+	userFound := &entity.User{}
+	result := db.Where("id = ?", user.ID).First(&userFound)
+	assert.Nil(t, result.Error)
+	
+	assert.Equal(t, user.ID, userFound.ID)
+	assert.Equal(t, user.Username, userFound.Username)
+	assert.Equal(t, user.Email, userFound.Email)
+	assert.Equal(t, user.Password, userFound.Password)
+}

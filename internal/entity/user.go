@@ -6,10 +6,10 @@ import (
 )
 
 type User struct {
-	ID  entity.ID
-	Username  string
-	Email  string 
-	Password string
+	ID  entity.ID    `json:"id"`
+	Username  string `json:"username"`
+	Email  string    `json:"email"`
+	Password string  `json:"password"`
 }
 
 var ErrInvalidUsername error = errors.New("username is required")

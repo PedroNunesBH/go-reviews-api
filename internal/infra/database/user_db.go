@@ -45,3 +45,15 @@ func (u *UserDB) DeleteUser(id pkgEntity.ID) error {
 	}
 	return nil
 }
+
+func (u *UserDB) UpdateUser(id pkgEntity.ID, user *entity.User) error {
+	result := u.DB.Model(&entity.User{}).
+        Where("id = ?", user.ID).
+        Updates(map[string]interface{}{
+            "username": user.Username,
+            "email": user.Email,
+            "password": user.Password,
+        })
+
+    return result.Error
+}
