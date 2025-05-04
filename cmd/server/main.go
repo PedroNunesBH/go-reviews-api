@@ -25,7 +25,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	db.AutoMigrate(&entity.Restaurant{}, &entity.Review{})
+	db.AutoMigrate(&entity.Restaurant{}, &entity.Review{}, &entity.User{})
 
 	restaurantRepo := database.NewRestaurantDB(db)
 	restaurantHandler := handlers.NewRestaurantHandler(restaurantRepo)
@@ -33,7 +33,14 @@ func main() {
 	reviewRepo := database.NewReviewDB(db)
 	reviewHandler := handlers.NewReviewHandler(reviewRepo)
 
+	userRepo := database.NewUserDB(db)
+	userHandler := handlers.NewUserHandler(userRepo)
+
 	r := chi.NewRouter()
+
+	r.Route("/users", func (r chi.Router) {
+		r.Get("/", userHandler.GetAllUsers)
+	})
 
 	r.Route("/restaurants", func (r chi.Router) {
 		r.Post("/", restaurantHandler.CreateRestaurant)
