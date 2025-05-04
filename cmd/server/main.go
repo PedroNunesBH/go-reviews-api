@@ -41,6 +41,7 @@ func main() {
 	r.Route("/users", func (r chi.Router) {
 		r.Get("/", userHandler.GetAllUsers)
 		r.Post("/", userHandler.CreateUser)
+		r.Get("/{id}", userHandler.GetUserByID)
 	})
 
 	r.Route("/restaurants", func (r chi.Router) {

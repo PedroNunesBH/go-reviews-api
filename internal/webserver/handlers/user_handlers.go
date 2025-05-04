@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"github.com/PedroNunesBH/go-reviews-api/internal/dto"
 	"github.com/PedroNunesBH/go-reviews-api/internal/entity"
+	"github.com/go-chi/chi"
+	pkgEntity "github.com/PedroNunesBH/go-reviews-api/pkg/entity"
 )
 
 type UserHandler struct {
@@ -47,6 +49,34 @@ func (u *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+}
+
+func (u *UserHandler) GetUserByID(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	parsedID, err := pkgEntity.ParseID(id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	user, err := u.UserRepo.GetUserByID(parsedID)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	userResponse := dto.UserResponseDTO{
+		ID: user.ID,
+		Username: user.Username,
+		Email: user.Email,
+		
+	}
+	userJson, err := json.Marshal(&userResponse)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(userJson)
 }
