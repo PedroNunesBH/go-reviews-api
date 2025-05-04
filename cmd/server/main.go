@@ -43,6 +43,7 @@ func main() {
 		r.Post("/", userHandler.CreateUser)
 		r.Get("/{id}", userHandler.GetUserByID)
 		r.Delete("/{id}", userHandler.DeleteUser)
+		r.Put("/{id}", userHandler.UpdateUser)
 	})
 
 	r.Route("/restaurants", func (r chi.Router) {
