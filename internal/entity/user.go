@@ -3,6 +3,7 @@ package entity
 import (
 	"github.com/PedroNunesBH/go-reviews-api/pkg/entity"
 	"errors"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
@@ -17,15 +18,22 @@ var ErrInvalidEmail error = errors.New("email is required")
 var ErrInvalidPassword error = errors.New("password must have at least 8 characters")
 
 func NewUser(username, email, password string) (*User, error) {
-	user := User{ID: entity.NewID(),
+	user := User{
+		ID:       entity.NewID(),
 		Username: username,
-		Email: email,
+		Email:    email,
 		Password: password,
 	}
-	err := user.ValidateUser()
+
+	if err := user.ValidateUser(); err != nil {
+		return nil, err
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
 	}
+	user.Password = string(hash)
 	return &user, nil
 }
 
@@ -40,4 +48,9 @@ func (u *User) ValidateUser() error {
 		return ErrInvalidPassword
 	}
 	return nil
+}
+
+func (u *User) ValidatePassword(password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+	return err == nil
 }
