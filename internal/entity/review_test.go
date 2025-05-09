@@ -3,7 +3,7 @@ package entity
 import (
 	"testing"
 	"github.com/stretchr/testify/assert"
-	"github.com/PedroNunesBH/go-reviews-api/pkg/entity"
+	"go-reviews-api/pkg/entity"
 )
 
 func TestCreateNewReview(t *testing.T) {

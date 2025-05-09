@@ -7,7 +7,7 @@ import (
 	"github.com/PedroNunesBH/go-reviews-api/internal/entity"
 	"github.com/PedroNunesBH/go-reviews-api/internal/infra/database"
 	"github.com/go-chi/chi"
-	pkgEntity "github.com/PedroNunesBH/go-reviews-api/pkg/entity"
+	pkgEntity "go-reviews-api/pkg/entity"
 )
 
 type ReviewHandler struct {

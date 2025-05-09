@@ -3,7 +3,7 @@ package database
 import (
 	"gorm.io/gorm"
 	"github.com/PedroNunesBH/go-reviews-api/internal/entity"
-	pkgEntity "github.com/PedroNunesBH/go-reviews-api/pkg/entity"
+	pkgEntity "go-reviews-api/pkg/entity"
 )
 
 type UserDB struct {

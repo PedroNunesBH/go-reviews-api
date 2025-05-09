@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 	"github.com/glebarez/sqlite"
 	"errors"
-	pkgEntity "github.com/PedroNunesBH/go-reviews-api/pkg/entity"
+	pkgEntity "go-reviews-api/pkg/entity"
 )
 
 func TestCreateReview(t *testing.T) {

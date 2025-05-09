@@ -1,7 +1,7 @@
 package entity 
 
 import (
-	"github.com/PedroNunesBH/go-reviews-api/pkg/entity"
+	"go-reviews-api/pkg/entity"
 	"errors"
 	"golang.org/x/crypto/bcrypt"
 )

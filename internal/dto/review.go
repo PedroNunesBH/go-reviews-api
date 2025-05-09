@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"github.com/PedroNunesBH/go-reviews-api/pkg/entity"
+	"go-reviews-api/pkg/entity"
 )
 
 type ReviewDTO struct {

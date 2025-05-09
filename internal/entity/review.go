@@ -2,7 +2,7 @@ package entity
 
 import (
 	"time"
-	"github.com/PedroNunesBH/go-reviews-api/pkg/entity"
+	"go-reviews-api/pkg/entity"
 	"errors"
 )
 

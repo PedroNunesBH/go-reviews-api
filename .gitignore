@@ -12,7 +12,6 @@
 
 # bin and pkg folders
 bin/
-pkg/
 
 # Output directory from go build
 /dist/
@@ -69,8 +68,6 @@ coverage.html
 .air.toml
 tmp/
 
-# Go specific files
-go.work
 
 # Local configuration files
 config.local.yaml

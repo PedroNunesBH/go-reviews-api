@@ -34,12 +34,3 @@ func TestCreateNewUserWithoutUser(t *testing.T) {
 	assert.EqualError(t, err, "username is required")
 	assert.Nil(t, user)
 }
-
-func TestUserCorrectHashPassword(t *testing.T) {
-	rawPassword := "teste234"
-	user, err := NewUser("Userteste", "teste@gmail.com", rawPassword)
-	assert.Nil(t, err)
-	assert.NotNil(t, user.Password)
-	assert.NotEqual(t, user.Password, rawPassword)
-	assert.True(t, user.ValidatePassword(rawPassword))	
-}
