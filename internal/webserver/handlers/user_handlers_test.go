@@ -13,6 +13,7 @@ import (
 	"io"
 	"fmt"
 	"github.com/go-chi/chi"
+	"bytes"
 )
 
 type UserHandlersTestSuit struct {
@@ -83,6 +84,20 @@ func (suite *UserHandlersTestSuit) TestGetUser() {
 
     suite.Equal(suite.user.Username, user["username"])
     suite.Equal(suite.user.Email, user["email"])
+}
+
+func (suite *UserHandlersTestSuit) TestCreateUser() {
+	userJson := `{"username": "teste234", "email": "teste@gmail.com", "password": "teste234"}`
+	body := bytes.NewBufferString(userJson)
+
+	req := httptest.NewRequest("POST", "/reviews", body)
+	w := httptest.NewRecorder()
+	suite.UserHandler.CreateUser(w, req)
+
+	res := w.Result()
+	defer res.Body.Close()
+
+	suite.Equal(201, res.StatusCode)
 }
 
 func TestUserHandlersTestSuit(t *testing.T) {
