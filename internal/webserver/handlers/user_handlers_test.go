@@ -9,24 +9,34 @@ import (
 	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 	"github.com/stretchr/testify/suite"
+	"encoding/json"
+	"io"
+	"fmt"
+	"github.com/go-chi/chi"
 )
 
 type UserHandlersTestSuit struct {
 	suite.Suite
 	UserHandler *UserHandler
+	user *entity.User
 }
 
 func (suite *UserHandlersTestSuit) SetupTest() {
 	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
-	if err != nil {
-		panic(err)
-	}
+	suite.Nil(err)
 	db.AutoMigrate(&entity.User{})
 
+	user, err := entity.NewUser("teste132", "teste2gmail.com", "teste234")
+	suite.Nil(err)
+
 	userRepo := database.NewUserDB(db)
+
+	userRepo.CreateUser(user)
+
 	userHandler := NewUserHandler(userRepo)
 
 	suite.UserHandler = userHandler
+	suite.user = user
 }
 
 func (suite *UserHandlersTestSuit) TestGetAllUsers() {
@@ -37,7 +47,42 @@ func (suite *UserHandlersTestSuit) TestGetAllUsers() {
 	res := w.Result()
 	defer res.Body.Close()
 
+	body, err := io.ReadAll(res.Body)
+	suite.Nil(err)
+
+	var users []map[string]interface{}
+
+	err = json.Unmarshal(body, &users)
+	suite.Require().NoError(err)
+
+	suite.Equal(suite.user.Username, users[0]["username"])
+	suite.Equal(suite.user.Email, users[0]["email"])
+
 	suite.Equal(http.StatusOK, res.StatusCode)
+}
+
+func (suite *UserHandlersTestSuit) TestGetUser() {
+    r := chi.NewRouter()
+    
+    r.Get("/reviews/{id}", suite.UserHandler.GetUserByID)
+
+    req := httptest.NewRequest("GET", fmt.Sprintf("/reviews/%s", suite.user.ID), nil)
+    w := httptest.NewRecorder()
+
+    r.ServeHTTP(w, req)
+
+    res := w.Result()
+    defer res.Body.Close()
+
+    body, err := io.ReadAll(res.Body)
+    suite.Nil(err)
+
+    var user map[string]interface{}
+    err = json.Unmarshal(body, &user)
+    suite.Nil(err)
+
+    suite.Equal(suite.user.Username, user["username"])
+    suite.Equal(suite.user.Email, user["email"])
 }
 
 func TestUserHandlersTestSuit(t *testing.T) {
