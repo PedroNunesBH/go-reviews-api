@@ -1,76 +1,82 @@
 package handlers
 
 import (
-	"net/http"
-	"net/http/httptest"
-	"testing"
-	"github.com/PedroNunesBH/go-reviews-api/internal/entity"
-	"github.com/PedroNunesBH/go-reviews-api/internal/infra/database"
-	"github.com/glebarez/sqlite"
-	"gorm.io/gorm"
-	"github.com/stretchr/testify/suite"
-	"encoding/json"
-	"io"
-	"fmt"
-	"github.com/go-chi/chi"
-	"bytes"
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "io"
+    "net/http"
+    "net/http/httptest"
+    "testing"
+
+    "github.com/PedroNunesBH/go-reviews-api/internal/entity"
+    "github.com/PedroNunesBH/go-reviews-api/internal/infra/database"
+    "github.com/go-chi/chi"
+    "github.com/glebarez/sqlite"
+    "github.com/stretchr/testify/suite"
+    "gorm.io/gorm"
 )
 
 type UserHandlersTestSuit struct {
-	suite.Suite
-	UserHandler *UserHandler
-	user *entity.User
+    suite.Suite
+    UserHandler *UserHandler
+    user        *entity.User
+    router      http.Handler
 }
 
 func (suite *UserHandlersTestSuit) SetupTest() {
-	db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
-	suite.Nil(err)
-	db.AutoMigrate(&entity.User{})
+    db, err := gorm.Open(sqlite.Open("file::memory:"), &gorm.Config{})
+    suite.Nil(err)
+    db.AutoMigrate(&entity.User{})
 
-	user, err := entity.NewUser("teste132", "teste2gmail.com", "teste234")
-	suite.Nil(err)
+    user, err := entity.NewUser("teste132", "teste2gmail.com", "teste234")
+    suite.Nil(err)
 
-	userRepo := database.NewUserDB(db)
+    userRepo := database.NewUserDB(db)
+    userRepo.CreateUser(user)
 
-	userRepo.CreateUser(user)
+    userHandler := NewUserHandler(userRepo)
+    suite.UserHandler = userHandler
+    suite.user = user
 
-	userHandler := NewUserHandler(userRepo)
+    r := chi.NewRouter()
+    r.Route("/users", func(r chi.Router) {
+        r.Get("/", userHandler.GetAllUsers)
+        r.Post("/", userHandler.CreateUser)
+        r.Get("/{id}", userHandler.GetUserByID)
+        r.Delete("/{id}", userHandler.DeleteUser)
+        r.Put("/{id}", userHandler.UpdateUser)
+    })
 
-	suite.UserHandler = userHandler
-	suite.user = user
+    suite.router = r
 }
 
 func (suite *UserHandlersTestSuit) TestGetAllUsers() {
-	req := httptest.NewRequest("GET", "/reviews", nil)
-	w := httptest.NewRecorder()	
-	suite.UserHandler.GetAllUsers(w, req)
+    req := httptest.NewRequest("GET", "/users", nil)
+    w := httptest.NewRecorder()
 
-	res := w.Result()
-	defer res.Body.Close()
+    suite.router.ServeHTTP(w, req)
 
-	body, err := io.ReadAll(res.Body)
-	suite.Nil(err)
+    res := w.Result()
+    defer res.Body.Close()
 
-	var users []map[string]interface{}
+    body, err := io.ReadAll(res.Body)
+    suite.Nil(err)
 
-	err = json.Unmarshal(body, &users)
-	suite.Require().NoError(err)
+    var users []map[string]interface{}
+    err = json.Unmarshal(body, &users)
+    suite.Require().NoError(err)
 
-	suite.Equal(suite.user.Username, users[0]["username"])
-	suite.Equal(suite.user.Email, users[0]["email"])
-
-	suite.Equal(http.StatusOK, res.StatusCode)
+    suite.Equal(suite.user.Username, users[0]["username"])
+    suite.Equal(suite.user.Email, users[0]["email"])
+    suite.Equal(http.StatusOK, res.StatusCode)
 }
 
 func (suite *UserHandlersTestSuit) TestGetUser() {
-    r := chi.NewRouter()
-    
-    r.Get("/reviews/{id}", suite.UserHandler.GetUserByID)
-
-    req := httptest.NewRequest("GET", fmt.Sprintf("/reviews/%s", suite.user.ID), nil)
+    req := httptest.NewRequest("GET", fmt.Sprintf("/users/%s", suite.user.ID), nil)
     w := httptest.NewRecorder()
 
-    r.ServeHTTP(w, req)
+    suite.router.ServeHTTP(w, req)
 
     res := w.Result()
     defer res.Body.Close()
@@ -84,21 +90,25 @@ func (suite *UserHandlersTestSuit) TestGetUser() {
 
     suite.Equal(suite.user.Username, user["username"])
     suite.Equal(suite.user.Email, user["email"])
+    suite.Equal(http.StatusOK, res.StatusCode)
 }
 
 func (suite *UserHandlersTestSuit) TestCreateUser() {
-	userJson := `{"username": "teste234", "email": "teste@gmail.com", "password": "teste234"}`
-	body := bytes.NewBufferString(userJson)
+    userJson := `{"username": "teste234", "email": "teste@gmail.com", "password": "teste234"}`
+    body := bytes.NewBufferString(userJson)
 
-	req := httptest.NewRequest("POST", "/reviews", body)
-	w := httptest.NewRecorder()
-	suite.UserHandler.CreateUser(w, req)
+    req := httptest.NewRequest("POST", "/users", body)
+    req.Header.Set("Content-Type", "application/json")
+    w := httptest.NewRecorder()
 
-	res := w.Result()
-	defer res.Body.Close()
+    suite.router.ServeHTTP(w, req)
 
-	suite.Equal(201, res.StatusCode)
+    res := w.Result()
+    defer res.Body.Close()
+
+    suite.Equal(http.StatusCreated, res.StatusCode)
 }
+
 
 func TestUserHandlersTestSuit(t *testing.T) {
     suite.Run(t, new(UserHandlersTestSuit))
