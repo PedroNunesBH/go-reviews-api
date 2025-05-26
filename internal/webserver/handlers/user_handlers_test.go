@@ -109,6 +109,34 @@ func (suite *UserHandlersTestSuit) TestCreateUser() {
     suite.Equal(http.StatusCreated, res.StatusCode)
 }
 
+func (suite *UserHandlersTestSuit) TestUpdateUser() {
+	userJson := `{"username": "teste234", "email": "teste@gmail.com", "password": "teste234"}`
+    body := bytes.NewBufferString(userJson)
+
+	req := httptest.NewRequest("PUT", fmt.Sprintf("/users/%s", suite.user.ID), body)
+	w := httptest.NewRecorder()
+
+	suite.router.ServeHTTP(w, req)
+
+	res := w.Result()
+	defer res.Body.Close()
+
+	responseBody, err := io.ReadAll(res.Body)
+	suite.Nil(err)
+
+	var user *entity.User
+	err = json.Unmarshal(responseBody, &user)
+	suite.Nil(err)
+
+	suite.Equal(http.StatusOK, res.StatusCode)
+	suite.Equal("teste234", user.Username)
+	suite.Equal("teste@gmail.com", user.Email)
+	suite.Equal(suite.user.ID, user.ID)
+
+	updatedUser, err := suite.UserHandler.UserRepo.GetUserByID(suite.user.ID)
+    suite.Nil(err)
+    suite.Equal("teste234", updatedUser.Username)
+}
 
 func TestUserHandlersTestSuit(t *testing.T) {
     suite.Run(t, new(UserHandlersTestSuit))
