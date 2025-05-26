@@ -138,6 +138,18 @@ func (suite *UserHandlersTestSuit) TestUpdateUser() {
     suite.Equal("teste234", updatedUser.Username)
 }
 
+func (suite *UserHandlersTestSuit) TestDeleteUser() {
+    req := httptest.NewRequest("DELETE", fmt.Sprintf("/users/%s", suite.user.ID), nil)
+    w := httptest.NewRecorder()
+
+    suite.router.ServeHTTP(w, req)
+
+    res := w.Result()
+    defer res.Body.Close()
+
+    suite.Equal(http.StatusNoContent, res.StatusCode)
+}
+
 func TestUserHandlersTestSuit(t *testing.T) {
     suite.Run(t, new(UserHandlersTestSuit))
 }
